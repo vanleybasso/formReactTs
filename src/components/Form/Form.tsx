@@ -1,12 +1,26 @@
 import { useForms } from "../../hooks/useForms";
 import { FormSchema } from "../../schemas/formSchema";
+import { useState } from "react";
 
 export const Form = () => {
   const { register, handleSubmit, errors } = useForms();
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const onSubmit = (data: FormSchema) => {
     console.log(data);
+    // Aqui você pode realizar a lógica do cadastro, como uma chamada à API ou outro processo.
+    setFeedbackMessage("Cadastro realizado com sucesso!");
+    
+    // Limpar a mensagem após alguns segundos
+    setTimeout(() => {
+      setFeedbackMessage(null);
+    }, 5000); // Mensagem desaparece após 5 segundos
   };
+
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
   return (
     <form
@@ -92,13 +106,22 @@ export const Form = () => {
         <label htmlFor="password" className="text-sm font-medium text-gray-700">
           Senha:
         </label>
-        <input
-          type="password"
-          id="password"
-          placeholder="Digite sua senha"
-          {...register("password")}
-          className="h-10 pl-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            id="password"
+            placeholder="Digite sua senha"
+            {...register("password")}
+            className="h-10 pl-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white w-full"
+          />
+          <button
+            type="button"
+            onClick={togglePasswordVisibility}
+            className="absolute right-3 top-3 text-gray-500"
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </button>
+        </div>
         {errors.password && (
           <small className="text-red-500 text-sm italic mt-1">
             {errors.password.message}
@@ -113,13 +136,22 @@ export const Form = () => {
         >
           Confirme a Senha:
         </label>
-        <input
-          type="password"
-          id="confirmpassword"
-          placeholder="Repita sua senha"
-          {...register("confirmpassword")}
-          className="h-10 pl-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
-        />
+        <div className="relative">
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            id="confirmpassword"
+            placeholder="Repita sua senha"
+            {...register("confirmpassword")}
+            className="h-10 pl-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white w-full"
+          />
+          <button
+            type="button"
+            onClick={toggleConfirmPasswordVisibility}
+            className="absolute right-3 top-3 text-gray-500"
+          >
+            {showConfirmPassword ? "🙈" : "👁️"}
+          </button>
+        </div>
         {errors.confirmpassword && (
           <small className="text-red-500 text-sm italic mt-1">
             {errors.confirmpassword.message}
@@ -152,6 +184,13 @@ export const Form = () => {
       >
         Cadastrar
       </button>
+
+      {/* Exibe a mensagem de feedback */}
+      {feedbackMessage && (
+        <div className="mt-4 p-4 bg-green-100 text-green-700 text-sm font-semibold rounded-md">
+          {feedbackMessage}
+        </div>
+      )}
     </form>
   );
 };
